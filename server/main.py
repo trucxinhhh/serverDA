@@ -2,11 +2,13 @@ import random
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
+from uuid import uuid4
 
 app = FastAPI()
 
-# Define the data model for sensor data
+# Define the data model for sensor data with an id
 class SensorData(BaseModel):
+    id: str
     CO2: float
     Temp: float
     Humi: float
@@ -17,8 +19,9 @@ class SensorData(BaseModel):
     WaterlevelSensor1: float
     WaterlevelSensor2: float
 
-# Define the data model for motor data
+# Define the data model for motor data with an id
 class MotorData(BaseModel):
+    id: str
     motor1: float
     motor2: float
     motor3: float
@@ -30,6 +33,7 @@ motor_data_store: List[MotorData] = []
 # Helper function to generate random sensor data
 def generate_random_sensor_data() -> SensorData:
     return SensorData(
+        id=str(uuid4()),  # Generate a unique ID
         CO2=random.uniform(300, 800),  # Random CO2 level
         Temp=random.uniform(15, 35),   # Random temperature in Celsius
         Humi=random.uniform(20, 100),  # Random humidity percentage
@@ -44,6 +48,7 @@ def generate_random_sensor_data() -> SensorData:
 # Helper function to generate random motor data
 def generate_random_motor_data() -> MotorData:
     return MotorData(
+        id=str(uuid4()),  # Generate a unique ID
         motor1=random.randint(0, 1),  # Random motor state
         motor2=random.randint(0, 1),  # Random motor state
         motor3=random.randint(0, 1)   # Random motor state
@@ -74,15 +79,16 @@ async def get_all_sensor_data():
     # Convert all sensor data to a list of dictionaries
     all_sensor_data = [
         {
-            "CO2": round(data.CO2,2),
+            "id": data.id,
+            "CO2": round(data.CO2, 2),
             "Temp": round(data.Temp, 2),
             "Humi": round(data.Humi, 2),
             "EC": round(data.EC, 2),
-            "Pressure": round(data.Pressure,2),
-            "Flowmeters": round(data.Flowmeters,2),
-            "pH": round(data.pH,2),
-            "WaterlevelSensor1": round(data.WaterlevelSensor1,2),
-            "WaterlevelSensor2": round(data.WaterlevelSensor2,2),
+            "Pressure": round(data.Pressure, 2),
+            "Flowmeters": round(data.Flowmeters, 2),
+            "pH": round(data.pH, 2),
+            "WaterlevelSensor1": round(data.WaterlevelSensor1, 2),
+            "WaterlevelSensor2": round(data.WaterlevelSensor2, 2),
         }
         for data in sensor_data_store
     ]
@@ -98,6 +104,7 @@ async def get_all_motor_data():
     # Convert all motor data to a list of dictionaries
     all_motor_data = [
         {
+            "id": data.id,
             "motor1": data.motor1,
             "motor2": data.motor2,
             "motor3": data.motor3,
